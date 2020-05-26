@@ -39,11 +39,10 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'tpope/vim-sensible'         " Sensible defaults
 
-Plug 'kaicataldo/material.vim'                                    " Material themes
-Plug 'morhetz/gruvbox'                                            " Retro colors theme
-Plug 'haishanh/night-owl.vim'                                     " A 'night friendly` theme
+Plug 'kaicataldo/material.vim'    " Material themes
+Plug 'morhetz/gruvbox'            " Retro colors theme
+Plug 'haishanh/night-owl.vim'     " A 'night friendly` theme
 
 call plug#end()
 
 colorscheme material
-
