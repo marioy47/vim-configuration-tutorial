@@ -1,10 +1,11 @@
 " config.vim
-
-let mapleader = " "
+"
+let mapleader = ","
 
 set nocompatible
 set number                " Show numbers on the left
 set hlsearch              " Highlight search results
+set incsearch             " Incremental search
 set ignorecase            " Search ingnoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells
@@ -13,15 +14,19 @@ set softtabstop=0         " On insert use 4 spaces for tab
 set shiftwidth=4
 set expandtab             " Use apropiate number of spaces
 set nowrap                " Wrapping sucks (except on markdown)
-autocmd BufRead,BufNewFile *.md setlocal wrap " DO wrap on markdown files
 set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
-set clipboard=unnamed     " Use the OS keyboard
+set clipboard=unnamed,unnamedplus     " Use the OS keyboard
 set showmatch
-set list
-"set listchars=eol:⏎,tab:>·,trail:-,nbsp:⎵
 
-set backspace=indent,eol,start
+set backspace=indent,eol,start " Fix backspace indent
+set list
+
+set background=dark
+
+if (has('termguicolors'))
+  set termguicolors
+endif
 
 " Keep VisualMode after indent with > or <
 vmap < <gv 
@@ -31,56 +36,132 @@ vmap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
+" Functions
+if !exists('*s:setupWrapping')
+  function s:setupWrapping()
+    set wrap
+    set wm=2
+    set textwidth=79
+  endfunction
+endif
+
+if !exists('*s:setTabConvert')
+  function s:setTabConvert()
+    setlocal noexpandtab
+    setlocal listchars=eol:⏎,tab:>·,trail:-,nbsp:⎵
+    %retab
+  endfunction
+endif
+
 " Autocommands 
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
+augroup vimrc-wrap-text-and-md-files
+  autocmd!
+  autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
+  autocmd BufRead,BufNewFile *.md call s:setupWrapping()
+augroup END
+
+command TabConvert call s:setTabConvert()
+
 " Install vim-plug for vim and neovim
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  silent !mkdir -p ~/.config/nvim/autoload/ && ln -s ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
+  silent !mkdir -p ~/.config/nvim/autoload/ && ln -s ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " Plugins
 call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-sensible'                                         " Sensible defaults
 
-Plug 'tpope/vim-sensible'         " Sensible defaults
-
-Plug 'kaicataldo/material.vim'    " Material themes
-Plug 'morhetz/gruvbox'            " Retro colors theme
-Plug 'haishanh/night-owl.vim'     " A 'night friendly` theme
+" Themes (I usually switch between them)
+Plug 'kaicataldo/material.vim'                                    " Material Themes
+Plug 'morhetz/gruvbox'                                            " Retro cool theme
+Plug 'haishanh/night-owl.vim'                                     " A 'Night Time' cool theme
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'drewtempelmeyer/palenight.vim'
 
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }           " File navigator
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Install fuzzy finder binary
-Plug 'junegunn/fzf.vim'           " Enable fuzzy finder in Vim
-Plug 'jiangmiao/auto-pairs'       " Insert or delete brackets, parens, quotes, etc.
-Plug 'mattn/emmet-vim'            " Vim Emmet support
-Plug 'preservim/nerdcommenter'
+" Make it work like a Code Editor
+Plug 'itchyny/lightline.vim'                                      " Simple status line
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }           " File navigator with <C-k><C-b>
+Plug 'preservim/nerdcommenter'                                    " Use <leader>c<space> for comments
+Plug 'Xuyuanp/nerdtree-git-plugin'                                " Git status on NERDTree
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Install fuzzy finder
+Plug 'junegunn/fzf.vim'                                           " <C-P> (find files) o
+Plug 'godlygeek/tabular'                                          " Align text by a character
+Plug 'jiangmiao/auto-pairs'                                       " Insert/delete brackets, parens, quotes in pair
+Plug 'mattn/emmet-vim'                                            " Emmet support with <C-y>,
 
-"Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Intelisense
+" Make Vim work like an IDE (requires node)
+Plug 'dense-analysis/ale'                                         " To use PHPCS or flake8 to check syntax errors
+Plug 'neoclide/coc.nvim', {'branch': 'release'}                   " Autocomplete
+Plug 'liuchengxu/vista.vim'                                       " Like ctags but for coc
 
 call plug#end()
 
-colorscheme material " Activate the Material theme
+" Gruvbox Theme
+let g:gruvbox_italic=1
 
-noremap <C-k><C-p> :NERDTreeToggle<cr> " Use Ctrl-K Ctrl-P to open a sidebar with the list of files
+" Material  Theme
+let g:material_terminal_italics = 1
+let g:material_theme_style =  'default' " 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker'
 
-nnoremap <C-p> :Files<cr>              " Use Ctrl-P to open the fuzzy file opener
+" Change the color scheme
+colorscheme material
+
+" Lightline
+let g:lightline = { 'colorscheme': 'material' } " material_vim | wombat
+
+" NERDTree
+noremap <C-k><C-P> :NERDTreeToggle<cr> 
+inoremap <C-k><C-P> <esc>:NERDTreeToggle<cr> 
+let NERDTreeShowHidden=1
+let NERDTreeQuitOnOpen=1
+
+" FZF
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+nnoremap <C-p> :Files<cr>
+inoremap <C-p> <esc>:Files<cr>
+nnoremap <C-k><C-g> :GFiles<cr>
+inoremap <C-k><C-g> <esc>:GFiles<cr>
+nnoremap <leader>y :History<cr>
+nnoremap <leader>b :Buffers<cr>
+
+" Vista.Vim
+nnoremap <leader>t :Vista!!<cr>
+let g:vista_default_executive = 'coc'
+let g:vista_fzf_preview = ['right:50%'] " This is very cool Ctrl-P preview!!!
+
+" ALE
+let g:ale_fix_on_save = 1
+"let g:ale_fixers = {
+"\   '*': ['remove_trailing_lines', 'trim_whitespace']
+"\}
 
 
+" CoC (Local Config)
 let g:coc_global_extensions = [
-    \ 'coc-tsserver',
-    \ 'coc-json',
-    \ 'coc-html',
     \ 'coc-css',
+    \ 'coc-eslint',
+    \ 'coc-html',
+    \ 'coc-json',
+    \ 'coc-markdownlint',
+    \ 'coc-marketplace',
     \ 'coc-phpls',
-    \ 'coc-python'
+    \ 'coc-prettier',
+    \ 'coc-python',
+    \ 'coc-tsserver'
     \]
 
-"source ./coc.vim
+
+" {{{ 
+" CoC
+" - Enable 'wordpress' in ~/.config/coc/extensions/node_modules/coc-phpls/package.json
+source coc.vim
+" }}}
 
 
