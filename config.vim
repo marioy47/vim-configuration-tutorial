@@ -54,12 +54,11 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Intelisense
 Plug 'liuchengxu/vim-which-key'
 call plug#end()
 
-colorscheme palenight " Activate the Material theme
+colorscheme material " Activate the Material theme
 
 noremap <C-k><C-p> :NERDTreeToggle<cr> " Use Ctrl-K Ctrl-P to open a sidebar with the list of files
 
 nnoremap <C-p> :Files<cr>              " Use Ctrl-P to open the fuzzy file opener
-
 
 
 let g:coc_global_extensions = [
