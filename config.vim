@@ -1,6 +1,6 @@
 " config.vim
 
-let mapleader = ","
+let mapleader = " "
 
 set nocompatible
 set number                " Show numbers on the left
@@ -9,7 +9,7 @@ set ignorecase            " Search ingnoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells
 set tabstop=4             " Tab size of 4 spaces
-set softtabstop=4         " On insert use 4 spaces for tab
+set softtabstop=0         " On insert use 4 spaces for tab
 set shiftwidth=4
 set expandtab             " Use apropiate number of spaces
 set nowrap                " Wrapping sucks (except on markdown)
@@ -18,6 +18,10 @@ set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
 set clipboard=unnamed     " Use the OS keyboard
 set showmatch
+set list
+"set listchars=eol:⏎,tab:>·,trail:-,nbsp:⎵
+
+set backspace=indent,eol,start
 
 " Keep VisualMode after indent with > or <
 vmap < <gv 
@@ -26,6 +30,12 @@ vmap > >gv
 " Move Visual blocks with J an K
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
+
+" Autocommands 
+augroup vimrc-remember-cursor-position
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup END
 
 " Install vim-plug for vim and neovim
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -48,10 +58,11 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }           " File navigat
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'           " Enable fuzzy finder in Vim
 Plug 'jiangmiao/auto-pairs'       " Insert or delete brackets, parens, quotes, etc.
+Plug 'mattn/emmet-vim'            " Vim Emmet support
+Plug 'preservim/nerdcommenter'
 
-Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Intelisense
+"Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Intelisense
 
-Plug 'liuchengxu/vim-which-key'
 call plug#end()
 
 colorscheme material " Activate the Material theme
@@ -70,8 +81,6 @@ let g:coc_global_extensions = [
     \ 'coc-python'
     \]
 
-source ./coc.vim
+"source ./coc.vim
 
-" WhichKey
-nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
