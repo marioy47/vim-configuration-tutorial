@@ -1,11 +1,9 @@
 " config.vim
-"
-let mapleader = ","
 
+let mapleader = ","
 set nocompatible
 set number                " Show numbers on the left
 set hlsearch              " Highlight search results
-set incsearch             " Incremental search
 set ignorecase            " Search ingnoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells
@@ -18,8 +16,6 @@ set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
 set clipboard=unnamed,unnamedplus     " Use the OS keyboard
 set showmatch
-set backspace=indent,eol,start " Fix backspace indent
-
 set background=dark
 
 if (has('termguicolors'))
@@ -34,16 +30,18 @@ vmap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-" Functions
+" Functions to convert spaces to tabs and show invisible characters
 if !exists('*s:setTabConvert')
   function s:setTabConvert()
     set list
     setlocal noexpandtab
-    setlocal listchars=eol:⏎,tab:>·,trail:-,nbsp:⎵
+    setlocal listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
     %retab
   endfunction
 endif
+command! TabConvert call s:setTabConvert()
 
+" Function to enable wrapping and have arrows navigate inside wraps
 if !exists('*s:wrapToggle')
     function s:wrapToggle()
         if &wrap
@@ -74,26 +72,25 @@ if !exists('*s:wrapToggle')
         endif
     endfunction
 endif
+command! WrapToggle call s:wrapToggle()
 
-" Autocommands
+" Autocomand to remember las editing position
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
+" Autocomand to enable wrapping on txt an md files
 augroup vimrc-wrap-text-and-md-files
   autocmd!
   autocmd BufRead,BufNewFile *.md call s:wrapToggle()
   autocmd BufRead,BufNewFile *.txt call s:wrapToggle()
 augroup END
 
-command TabConvert call s:setTabConvert()
-command WrapToggle call s:wrapToggle()
-
 " Install vim-plug for vim and neovim
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  silent !mkdir -p ~/.config/nvim/autoload/ && ln -s ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/plug.vim
+  "silent !mkdir -p ~/.config/nvim/autoload/ && ln -s ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
@@ -109,48 +106,46 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'joshdick/onedark.vim'
 
-
 " Make it work like a Code Editor
 Plug 'itchyny/lightline.vim'                                      " Simple status line
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }           " File navigator with <C-k><C-b>
 Plug 'preservim/nerdcommenter'                                    " Use <leader>c<space> for comments
 Plug 'Xuyuanp/nerdtree-git-plugin'                                " Git status on NERDTree
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Install fuzzy finder
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                           " <C-P> (find files) o
-Plug 'godlygeek/tabular'                                          " Align text by a character
+Plug 'junegunn/vim-easy-align'                                    " Align text by characters or reguex
 Plug 'jiangmiao/auto-pairs'                                       " Insert/delete brackets, parens, quotes in pair
 Plug 'mattn/emmet-vim'                                            " Emmet support with <C-y>,
 
 " Make Vim work like an IDE (requires node)
-Plug 'dense-analysis/ale'                                         " To use PHPCS or flake8 to check syntax errors
-Plug 'neoclide/coc.nvim', {'branch': 'release'}                   " Autocomplete
-Plug 'liuchengxu/vista.vim'                                       " Like ctags but for coc
-
+Plug 'dense-analysis/ale'                                         " Use different linters to fix code (Coc config required)
+Plug 'neoclide/coc.nvim', {'branch': 'release'}                   " This gives you VSCode inside Vim!!!
+Plug 'liuchengxu/vista.vim'                                       " Like ctags but for Coc
 call plug#end()
 
 " Italics in NeoVim only
 if has('nvim')
-  let g:gruvbox_italic=0                        " Gruvbox Theme
-  let g:material_terminal_italics = 1           " Material  Theme
+  let g:gruvbox_italic=0                      " Gruvbox Theme
+  let g:material_terminal_italics = 1         " Material  Theme
 endif
 
-
-let g:material_theme_style =  'default'         " 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker'
+let g:material_theme_style =  'palenight'     " 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker'
 
 " Change the color scheme
-colorscheme material
+colorscheme palenight
 
-" Lightline
-let g:lightline = { 'colorscheme': 'material' } " material_vim | wombat
+                                              " Lightline
+let g:lightline = { 'colorscheme': 'wombat' } " material_vim | wombat
 
 " NERDTree
-noremap <C-k><C-P> :NERDTreeToggle<cr>
-inoremap <C-k><C-P> <esc>:NERDTreeToggle<cr>
+noremap <C-k><C-p> :NERDTreeToggle<cr>
+inoremap <C-k><C-p> <esc>:NERDTreeToggle<cr>
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
 
 " FZF
 set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'vendor/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 nnoremap <C-p> :Files<cr>
 inoremap <C-p> <esc>:Files<cr>
 nnoremap <C-k><C-g> :GFiles<cr>
@@ -158,18 +153,29 @@ inoremap <C-k><C-g> <esc>:GFiles<cr>
 nnoremap <leader>y :History<cr>
 nnoremap <leader>b :Buffers<cr>
 
+" ALE
+"let g:ale_lint_delay=1000
+"let g:ale_lint_on_text_changed='never'
+
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix=1
+"let g:ale_open_list = 1
+
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '▲'
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'php': ['phpcbf']
+\}
+nmap <silent> <C-e>j <Plug>(ale_previous_wrap)
+nmap <silent> <C-e>k <Plug>(ale_next_wrap)
+
 " Vista.Vim
 nnoremap <leader>t :Vista!!<cr>
 let g:vista_default_executive = 'coc'
 let g:vista_fzf_preview = ['right:50%'] " This is very cool Ctrl-P preview!!!
 
-" ALE
-let g:ale_fix_on_save = 1
-let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace']
-\}
-
-" CoC (Local Config)
+" CoC
 let g:coc_global_extensions = [
     \ 'coc-css',
     \ 'coc-eslint',
