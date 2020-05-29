@@ -18,9 +18,7 @@ set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
 set clipboard=unnamed,unnamedplus     " Use the OS keyboard
 set showmatch
-
 set backspace=indent,eol,start " Fix backspace indent
-set list
 
 set background=dark
 
@@ -29,31 +27,55 @@ if (has('termguicolors'))
 endif
 
 " Keep VisualMode after indent with > or <
-vmap < <gv 
-vmap > >gv 
+vmap < <gv
+vmap > >gv
 
 " Move Visual blocks with J an K
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
 " Functions
-if !exists('*s:setupWrapping')
-  function s:setupWrapping()
-    set wrap
-    set wm=2
-    set textwidth=79
-  endfunction
-endif
-
 if !exists('*s:setTabConvert')
   function s:setTabConvert()
+    set list
     setlocal noexpandtab
     setlocal listchars=eol:⏎,tab:>·,trail:-,nbsp:⎵
     %retab
   endfunction
 endif
 
-" Autocommands 
+if !exists('*s:wrapToggle')
+    function s:wrapToggle()
+        if &wrap
+            echo "Wrap OFF"
+            setlocal nowrap
+            set virtualedit=all
+            silent! nunmap <buffer> <Up>
+            silent! nunmap <buffer> <Down>
+            silent! nunmap <buffer> <Home>
+            silent! nunmap <buffer> <End>
+            silent! iunmap <buffer> <Up>
+            silent! iunmap <buffer> <Down>
+            silent! iunmap <buffer> <Home>
+            silent! iunmap <buffer> <End>
+        else
+            echo "Wrap ON"
+            setlocal wrap linebreak nolist
+            set virtualedit=
+            setlocal display+=lastline
+            noremap  <buffer> <silent> <Up>   gk
+            noremap  <buffer> <silent> <Down> gj
+            noremap  <buffer> <silent> <Home> g<Home>
+            noremap  <buffer> <silent> <End>  g<End>
+            inoremap <buffer> <silent> <Up>   <C-o>gk
+            inoremap <buffer> <silent> <Down> <C-o>gj
+            inoremap <buffer> <silent> <Home> <C-o>g<Home>
+            inoremap <buffer> <silent> <End>  <C-o>g<End>
+        endif
+    endfunction
+endif
+
+" Autocommands
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -61,11 +83,12 @@ augroup END
 
 augroup vimrc-wrap-text-and-md-files
   autocmd!
-  autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
-  autocmd BufRead,BufNewFile *.md call s:setupWrapping()
+  autocmd BufRead,BufNewFile *.md call s:wrapToggle()
+  autocmd BufRead,BufNewFile *.txt call s:wrapToggle()
 augroup END
 
 command TabConvert call s:setTabConvert()
+command WrapToggle call s:wrapToggle()
 
 " Install vim-plug for vim and neovim
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -84,6 +107,8 @@ Plug 'morhetz/gruvbox'                                            " Retro cool t
 Plug 'haishanh/night-owl.vim'                                     " A 'Night Time' cool theme
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'drewtempelmeyer/palenight.vim'
+Plug 'joshdick/onedark.vim'
+
 
 " Make it work like a Code Editor
 Plug 'itchyny/lightline.vim'                                      " Simple status line
@@ -103,12 +128,14 @@ Plug 'liuchengxu/vista.vim'                                       " Like ctags b
 
 call plug#end()
 
-" Gruvbox Theme
-let g:gruvbox_italic=1
+" Italics in NeoVim only
+if has('nvim')
+  let g:gruvbox_italic=0                        " Gruvbox Theme
+  let g:material_terminal_italics = 1           " Material  Theme
+endif
 
-" Material  Theme
-let g:material_terminal_italics = 1
-let g:material_theme_style =  'default' " 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker'
+
+let g:material_theme_style =  'default'         " 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker'
 
 " Change the color scheme
 colorscheme material
@@ -117,8 +144,8 @@ colorscheme material
 let g:lightline = { 'colorscheme': 'material' } " material_vim | wombat
 
 " NERDTree
-noremap <C-k><C-P> :NERDTreeToggle<cr> 
-inoremap <C-k><C-P> <esc>:NERDTreeToggle<cr> 
+noremap <C-k><C-P> :NERDTreeToggle<cr>
+inoremap <C-k><C-P> <esc>:NERDTreeToggle<cr>
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
 
@@ -138,10 +165,9 @@ let g:vista_fzf_preview = ['right:50%'] " This is very cool Ctrl-P preview!!!
 
 " ALE
 let g:ale_fix_on_save = 1
-"let g:ale_fixers = {
-"\   '*': ['remove_trailing_lines', 'trim_whitespace']
-"\}
-
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace']
+\}
 
 " CoC (Local Config)
 let g:coc_global_extensions = [
@@ -149,7 +175,6 @@ let g:coc_global_extensions = [
     \ 'coc-eslint',
     \ 'coc-html',
     \ 'coc-json',
-    \ 'coc-markdownlint',
     \ 'coc-marketplace',
     \ 'coc-phpls',
     \ 'coc-prettier',
@@ -157,11 +182,6 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver'
     \]
 
-
-" {{{ 
 " CoC
 " - Enable 'wordpress' in ~/.config/coc/extensions/node_modules/coc-phpls/package.json
 source coc.vim
-" }}}
-
-
