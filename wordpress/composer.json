@@ -1,21 +1,31 @@
 {
-  "name": "marioy47/vim-configuration-tutorial",
-  "description": "A repo for configuring vim with CoC, Ale, NERDTree and FzF",
-  "type": "project",
-  "license": "GPL",
-  "authors": [
-    {
-      "name": "Mario Yepes",
-      "email": "marioy47@gmail.com"
-    }
-  ],
-  "minimum-stability": "beta",
-  "require": {},
-  "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "*",
-    "squizlabs/php_codesniffer": "*",
-    "phpcompatibility/php-compatibility": "*",
-    "wp-coding-standards/wpcs": "*",
-    "sirbrillig/phpcs-variable-analysis": "*"
-  }
+	"name": "marioy47/vim-configuration-tutorial",
+	"description": "Test files for vimrc creation",
+	"type": "project",
+	"authors": [
+		{
+			"name": "Mario Yepes",
+			"email": "marioy47@gmail.com"
+		}
+	],
+	"require": {},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "*",
+		"phpcompatibility/php-compatibility": "*",
+		"phpcompatibility/phpcompatibility-wp": "*",
+		"sirbrillig/phpcs-variable-analysis": "*",
+		"wp-coding-standards/wpcs": "*"
+	},
+	"scripts": {
+		"install-codestandards": [
+			"Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+		],
+		"post-install-cmd": [
+			"@install-codestandards"
+		],
+		"phpcs": "phpcs",
+		"phpcbf": "phpcbf"
+	},
+	"autoload": {
+	}
 }
