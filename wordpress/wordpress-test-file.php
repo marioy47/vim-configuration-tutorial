@@ -9,12 +9,15 @@
 /**
  * Comment for the class
  */
-class HelloWorld {
+class HelloWorld
+{
+
 
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
-		echo 'hello';
+	public function __construct()
+	{
+ echo 'hello';
 	}
 }

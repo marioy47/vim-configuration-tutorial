@@ -19,6 +19,7 @@ set mouse=a               " Enable mouse on all modes
 set clipboard=unnamed     " Use the OS keyboard
 set showmatch
 set termguicolors
+set list lcs=tab:\¦\      "(here is a space)
 
 " Keep VisualMode after indent with > or <
 vmap < <gv
@@ -42,8 +43,7 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'               " Enable fuzzy finder in Vim
 Plug 'editorconfig/editorconfig-vim'  " Tab/Space trough projects
-Plug 'dense-analysis/ale'             " Check syntax in Vim asynchronously and fix files
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 colorscheme palenight                 " Activate the Palenight theme
@@ -52,7 +52,4 @@ colorscheme palenight                 " Activate the Palenight theme
 map <C-k><C-p> :NERDTreeToggle<cr>
 " Use Ctrl-P to open the fuzzy file opener
 nnoremap <C-p> :Files<cr>
-
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
 
