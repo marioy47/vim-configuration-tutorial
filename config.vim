@@ -8,6 +8,7 @@ set hlsearch              " Highlight search results
 set ignorecase            " Search ingnoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells
+set belloff=esc
 set tabstop=4             " Tab size of 4 spaces
 set softtabstop=4         " On insert use 4 spaces for tab
 set shiftwidth=4
@@ -65,6 +66,8 @@ Plug 'itchyny/lightline.vim'                            " Lightweight status lin
 Plug 'maximbaz/lightline-ale'                           " Lightline ALE support
 Plug 'airblade/vim-gitgutter'                           " Show which lines changed
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
+Plug 'sheerun/vim-polyglot'
+Plug 'liuchengxu/vista.vim'                             " Viewer & Finder for LSP symbols and tags
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme for your favorite [best] text editor
 call plug#end()
 
@@ -74,24 +77,40 @@ let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
+
+augroup nerdtree-auto-open-if-param-is-dir
+  autocmd!
+  autocmd StdinReadPre * let s:std_in=1
+  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+augroup END
+
 " Except Ctrl-P  to make it work like VS
 map <C-p> :Files<cr>
-map <C-k><C-u> :Buffers<cr>
 
 " ALE Shortcodes
-nmap <leader>ap <Plug>(ale_previous_wrap)
+nmap <C-n> <Plug>(ale_previous_wrap)
 nmap <leader>an <C-j> <Plug>(ale_next_wrap)
-"let g:ale_sign_error = '✘'
-"let g:ale_sign_warning = '▲'
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '▲'
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
             \ '*': ['remove_trailing_lines', 'trim_whitespace'],
-            \ 'javascript': ['eslint'],
             \ 'php': ['phpcbf']
             \}
 
+" LightLine
 let g:lightline = {
       \ 'colorscheme': 'nord',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
+      \ },
       \ }
 
 let g:lightline.component_expand = {
@@ -108,7 +127,29 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]] }
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
+endfunction
+
+
+" Easy Align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" Vista
+let g:vista#renderer#enable_icon = 0
+let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
+let g:vista_default_executive = 'coc'
+let g:vista_fzf_preview = ['right:50%']
+nnoremap <C-k><C-o> <esc>:Vista!!<cr>
+
+" To use vista with lightline
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
 
 " CoC
 let g:coc_global_extensions = [
