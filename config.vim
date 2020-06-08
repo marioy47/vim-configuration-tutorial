@@ -1,30 +1,26 @@
-" config.vim
+" config.vim 
 
-let mapleader = ","
-
+let mapleader=","
 set nocompatible
 set number                " Show numbers on the left
 set hlsearch              " Highlight search results
 set ignorecase            " Search ingnoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells
-set belloff=esc
+set belloff=esc           " Disable bell if type <esc> multiple times
 set tabstop=4             " Tab size of 4 spaces
 set softtabstop=4         " On insert use 4 spaces for tab
-set shiftwidth=4
-set expandtab             " Use apropiate number of spaces
+set shiftwidth=0
+" set expandtab             " Use apropiate number of spaces
 set nowrap                " Wrapping sucks (except on markdown)
-autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
 set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
-set clipboard=unnamed,unnamedplus     " Use the OS clipboard
+"set clipboard=unnamed,unnamedplus     " Use the OS clipboard
 set showmatch
 set termguicolors
 set splitright splitbelow
-set list lcs=tab:\¦\      "(here is a space)
 let &t_SI = "\e[6 q"      " Make cursor a line in insert
 let &t_EI = "\e[2 q"      " Make cursor a line in insert
-
 
 " Keep VisualMode after indent with > or <
 vmap < <gv
@@ -34,9 +30,17 @@ vmap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-" Open loclist
-nnoremap <leader>lo :lopen<cr>
-nnoremap <leader>lc :lclose<cr>
+" YY: Copy on system clipboard. XX: Paste from system clilpboard
+noremap YY "+y<CR>
+noremap XX "+x<CR>
+
+" Enable wrap on Markdown and Text files
+augroup vimrc-enable-wrap-on-text-files
+  autocmd!
+  autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
+  autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> j gj
+  autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> k gk
+augroup END
 
 " Autocomand to remember las editing position
 augroup vimrc-remember-cursor-position
@@ -44,114 +48,33 @@ augroup vimrc-remember-cursor-position
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
+
 " Install vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'                               " Sensible defaults
+Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Awesome autocoplete
+Plug 'itchyny/lightline.vim'                            " Beautify status line
+Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
+Plug 'flazz/vim-colorschemes'                           " Metapackage with a lot of colorschemes
+Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme for your favorite [best] text editor
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator
 Plug 'Xuyuanp/nerdtree-git-plugin'                      " Git status on NERDTree
+Plug 'preservim/nerdcommenter'                          " Use <leader>c<space> for comments
+Plug 'airblade/vim-gitgutter'                           " Show which lines changed
+Plug 'editorconfig/editorconfig-vim'                    " Tab/Space trough projects
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim
-Plug 'editorconfig/editorconfig-vim'                    " Tab/Space trough projects
-Plug 'preservim/nerdcommenter'                          " Use <leader>c<space> for comments
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
-Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Awesome autocoplete
-Plug 'dense-analysis/ale'                               " The only linter that works everywhere
-Plug 'itchyny/lightline.vim'                            " Lightweight status line
-Plug 'maximbaz/lightline-ale'                           " Lightline ALE support
-Plug 'airblade/vim-gitgutter'                           " Show which lines changed
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
-Plug 'sheerun/vim-polyglot'
-Plug 'liuchengxu/vista.vim'                             " Viewer & Finder for LSP symbols and tags
-Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme for your favorite [best] text editor
 call plug#end()
 
-
-" NERDTree
-let NERDTreeShowHidden=1
-let NERDTreeQuitOnOpen=1
-map <C-k><C-k> :NERDTreeToggle<cr>
-map <C-k><C-f> :NERDTreeFind<cr>
-
-augroup nerdtree-auto-open-if-param-is-dir
-  autocmd!
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
-  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-augroup END
-
-" Except Ctrl-P  to make it work like VS
-map <C-p> :Files<cr>
-
-" ALE Shortcodes
-nmap <C-n> <Plug>(ale_previous_wrap)
-nmap <leader>an <C-j> <Plug>(ale_next_wrap)
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '▲'
-let g:ale_fix_on_save = 1
-let g:ale_fixers = {
-            \ '*': ['remove_trailing_lines', 'trim_whitespace'],
-            \ 'php': ['phpcbf']
-            \}
-
-" LightLine
-let g:lightline = {
-      \ 'colorscheme': 'nord',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction'
-      \ },
-      \ }
-
-let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_infos': 'lightline#ale#infos',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \ }
-let g:lightline.component_type = {
-      \     'linter_checking': 'right',
-      \     'linter_infos': 'right',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'right',
-      \ }
-function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
-endfunction
-
-
-" Easy Align
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
-
-" Vista
-let g:vista#renderer#enable_icon = 0
-let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
-let g:vista_default_executive = 'coc'
-let g:vista_fzf_preview = ['right:50%']
-nnoremap <C-k><C-o> <esc>:Vista!!<cr>
-
-" To use vista with lightline
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
-
-
-" CoC
+" CoC extensions
 let g:coc_global_extensions = [
     \ 'coc-css',
     \ 'coc-eslint',
@@ -164,6 +87,19 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver'
     \]
 
+" CoC (taken from github.com/neoclide/coc.nvim) 
+set hidden
+set nobackup
+set nowritebackup
+set cmdheight=2
+set updatetime=300
+set shortmess+=c
+if has("patch-8.1.1564")
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
+
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -175,17 +111,23 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+inoremap <silent><expr> <c-space> coc#refresh()
+
 if exists('*complete_info')
   inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 else
   inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-nmap <leader>rn <Plug>(coc-rename)
+
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -195,11 +137,84 @@ function! s:show_documentation()
   endif
 endfunction
 
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+nmap <leader>rn <Plug>(coc-rename)
+
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+nmap <leader>ac  <Plug>(coc-codeaction)
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
 
 command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+" LightLine with CoC
+let g:lightline = {
+  \ 'colorscheme': 'material',
+  \ 'active': {
+  \   'left': [ [ 'mode', 'paste' ],
+  \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+  \ },
+  \ 'component_function': {
+  \   'cocstatus': 'coc#status'
+  \ },
+  \ }
+" Use auocmd to force lightline update.
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+ 
+" NERDTree
+let NERDTreeShowHidden=1
+let NERDTreeQuitOnOpen=1
+map <C-k><C-k> :NERDTreeToggle<cr>
+map <C-k><C-f> :NERDTreeFind<cr>
+augroup nerdtree-auto-open-if-param-is-dir
+  autocmd!
+  autocmd StdinReadPre * let s:std_in=1
+  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | exe 'NERDTreeCWD' | wincmd p | ene | exe 'cd '.argv()[0] | endif
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+augroup END
+
+" FzF
+map <C-p> :Files<cr>
+
+" Easy Align. Start interactive modes in visual and motion/text objects
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
 
 " Theme(s) settings
 if has('nvim')
@@ -207,4 +222,4 @@ if has('nvim')
   let g:material_terminal_italics = 1  " Material  Theme
   let g:palenight_terminal_italics = 1 " Palenight
 endif
-colorscheme palenight                  " Activate the Palenight theme
+colorscheme gruvbox
