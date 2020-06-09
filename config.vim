@@ -16,21 +16,21 @@ set nowrap                " Wrapping sucks (except on markdown)
 set noswapfile            " Do not leve any backup files
 set mouse=a               " Enable mouse on all modes
 "set clipboard=unnamed,unnamedplus     " Use the OS clipboard
-set showmatch
-set termguicolors
-set splitright splitbelow
-let &t_SI = "\e[6 q"      " Make cursor a line in insert
-let &t_EI = "\e[2 q"      " Make cursor a line in insert
+set showmatch             " Highlights the mathcin parentesis
+set termguicolors         " Required for some themes
+set splitright splitbelow " Changes the behaviour of vertical and horizontal splits
+let &t_EI = "\e[2 q"      " Make cursor a line in insert on Vim
+let &t_SI = "\e[6 q"      " Make cursor a line in insert on Vim
 
 " Keep VisualMode after indent with > or <
 vmap < <gv
 vmap > >gv
 "
-" Move Visual blocks with J an K
+" Move Visual blocks up or down with J an K
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-" YY: Copy on system clipboard. XX: Paste from system clilpboard
+" YY: Copy and Cut into the system clipboard
 noremap YY "+y<CR>
 noremap XX "+x<CR>
 
@@ -48,33 +48,33 @@ augroup vimrc-remember-cursor-position
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
-
 " Install vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'                               " Sensible defaults
-Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Awesome autocoplete
+Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
 Plug 'itchyny/lightline.vim'                            " Beautify status line
+Plug 'josa42/vim-lightline-coc'                         " LightLine CoC integration
 Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
 Plug 'flazz/vim-colorschemes'                           " Metapackage with a lot of colorschemes
-Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme for your favorite [best] text editor
+Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme not on vim-colorschemes
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator
-Plug 'Xuyuanp/nerdtree-git-plugin'                      " Git status on NERDTree
-Plug 'preservim/nerdcommenter'                          " Use <leader>c<space> for comments
+Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
+Plug 'preservim/nerdcommenter'                          " Comment lines or blocks depending on the language
 Plug 'airblade/vim-gitgutter'                           " Show which lines changed
-Plug 'editorconfig/editorconfig-vim'                    " Tab/Space trough projects
+Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
 call plug#end()
 
-" CoC extensions
+" CoC extensions to be auto installed
 let g:coc_global_extensions = [
     \ 'coc-css',
     \ 'coc-eslint',
@@ -87,7 +87,7 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver'
     \]
 
-" CoC (taken from github.com/neoclide/coc.nvim) 
+" CoC (taken from github.com/neoclide/coc.nvim without changes) 
 set hidden
 set nobackup
 set nowritebackup
@@ -183,20 +183,14 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-" LightLine with CoC
+" VimLightlineCoc 
 let g:lightline = {
-  \ 'colorscheme': 'material',
-  \ 'active': {
-  \   'left': [ [ 'mode', 'paste' ],
-  \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-  \ },
-  \ 'component_function': {
-  \   'cocstatus': 'coc#status'
-  \ },
+  \   'active': {
+  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status'  ]]
+  \   }
   \ }
-" Use auocmd to force lightline update.
-autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
- 
+call lightline#coc#register()
+
 " NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
@@ -212,7 +206,7 @@ augroup END
 " FzF
 map <C-p> :Files<cr>
 
-" Easy Align. Start interactive modes in visual and motion/text objects
+" EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
