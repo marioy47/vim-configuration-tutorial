@@ -14,7 +14,7 @@ set shiftwidth=0
 " set expandtab             " Use apropiate number of spaces
 set nowrap                " Wrapping sucks (except on markdown)
 set noswapfile            " Do not leve any backup files
-set mouse=a               " Enable mouse on all modes
+set mouse=i               " Enable mouse on all modes
 "set clipboard=unnamed,unnamedplus     " Use the OS clipboard
 set showmatch             " Highlights the mathcin parentesis
 set termguicolors         " Required for some themes
@@ -40,6 +40,7 @@ augroup vimrc-enable-wrap-on-text-files
   autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
   autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> j gj
   autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> k gk
+  autocmd BufRead,BufNewFile *.md,*.txt setlocal noshowmatch
 augroup END
 
 " Autocomand to remember las editing position
@@ -59,19 +60,20 @@ call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'                               " Sensible defaults
 Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
 Plug 'itchyny/lightline.vim'                            " Beautify status line
-Plug 'josa42/vim-lightline-coc'                         " LightLine CoC integration
+Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
 Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
 Plug 'flazz/vim-colorschemes'                           " Metapackage with a lot of colorschemes
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme not on vim-colorschemes
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
 Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
-Plug 'preservim/nerdcommenter'                          " Comment lines or blocks depending on the language
-Plug 'airblade/vim-gitgutter'                           " Show which lines changed
+Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
+Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
 Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
-Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim
+Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim with <C-p>
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
+Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -183,13 +185,15 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-" VimLightlineCoc 
+" LightLine
 let g:lightline = {
+  \   'colorscheme': 'nord',
   \   'active': {
-  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status'  ]]
+  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'readonly', 'filename', 'modified'  ]]
   \   }
   \ }
 call lightline#coc#register()
+
 
 " NERDTree
 let NERDTreeShowHidden=1
@@ -216,4 +220,4 @@ if has('nvim')
   let g:material_terminal_italics = 1  " Material  Theme
   let g:palenight_terminal_italics = 1 " Palenight
 endif
-colorscheme gruvbox
+colorscheme palenight
