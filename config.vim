@@ -34,13 +34,28 @@ vnoremap K :m '<-2<CR>gv=gv
 noremap YY "+y<CR>
 noremap XX "+x<CR>
 
+" search will center on the line it's found in.
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
 " Enable wrap on Markdown and Text files
+if !exists('*s:setupWrapping')
+  function s:setupWrapping()
+    setlocal wrap
+    setlocal wrapmargin=2
+    setlocal textwidth=79
+    setlocal noshowmatch
+    nnoremap <buffer> j gj
+    nnoremap <buffer> k gk
+  endfunction
+endif
 augroup vimrc-enable-wrap-on-text-files
   autocmd!
-  autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
-  autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> j gj
-  autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> k gk
-  autocmd BufRead,BufNewFile *.md,*.txt setlocal noshowmatch
+  autocmd BufRead,BufNewFile *.txt,*.md call s:setupWrapping()
+  "autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
+  "autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> j gj
+  "autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> k gk
+  "autocmd BufRead,BufNewFile *.md,*.txt setlocal noshowmatch
 augroup END
 
 " Autocomand to remember las editing position
@@ -74,6 +89,8 @@ Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
 Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
+Plug 'tpope/vim-fugitive'                               " Like :!git but better
+Plug 'ludovicchabant/vim-gutentags'
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -189,7 +206,10 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 let g:lightline = {
   \   'colorscheme': 'nord',
   \   'active': {
-  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'readonly', 'filename', 'modified'  ]]
+  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified'  ]]
+  \   },
+  \   'component_function': {
+  \     'gitbranch': 'fugitive#head'
   \   }
   \ }
 call lightline#coc#register()
@@ -220,4 +240,4 @@ if has('nvim')
   let g:material_terminal_italics = 1  " Material  Theme
   let g:palenight_terminal_italics = 1 " Palenight
 endif
-colorscheme palenight
+silent! colorscheme palenight
