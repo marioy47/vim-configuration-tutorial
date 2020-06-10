@@ -52,10 +52,6 @@ endif
 augroup vimrc-enable-wrap-on-text-files
   autocmd!
   autocmd BufRead,BufNewFile *.txt,*.md call s:setupWrapping()
-  "autocmd BufRead,BufNewFile *.md,*.txt setlocal wrap " DO wrap on markdown files
-  "autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> j gj
-  "autocmd BufRead,BufNewFile *.md,*.txt nnoremap <buffer> k gk
-  "autocmd BufRead,BufNewFile *.md,*.txt setlocal noshowmatch
 augroup END
 
 " Autocomand to remember las editing position
@@ -91,6 +87,7 @@ Plug 'mattn/emmet-vim'                                  " Emmet support with <C-
 Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'liuchengxu/vista.vim'
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -202,14 +199,25 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+" Vista
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+let g:vista#renderer#enable_icon = 0
+let g:vista_default_executive = 'coc'
+nnoremap <C-k><C-o> :Vista!!<cr>
+inoremap <C-k><C-o> <esc>:Vista!!<cr>
+
+
 " LightLine
 let g:lightline = {
   \   'colorscheme': 'nord',
   \   'active': {
-  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified'  ]]
+  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]]
   \   },
   \   'component_function': {
-  \     'gitbranch': 'fugitive#head'
+  \     'gitbranch': 'fugitive#head',
+  \     'method': 'NearestMethodOrFunction'
   \   }
   \ }
 call lightline#coc#register()
@@ -233,6 +241,7 @@ map <C-p> :Files<cr>
 " EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
 
 " Theme(s) settings
 if has('nvim')
