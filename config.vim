@@ -1,4 +1,4 @@
-" config.vim 
+" config.vim
 
 let mapleader=","
 set nocompatible
@@ -43,7 +43,7 @@ if !exists('*s:setupWrapping')
   function s:setupWrapping()
     setlocal wrap
     setlocal wrapmargin=2
-    setlocal textwidth=79
+    "setlocal textwidth=79
     setlocal noshowmatch
     nnoremap <buffer> j gj
     nnoremap <buffer> k gk
@@ -86,8 +86,9 @@ Plug 'junegunn/vim-easy-align'                          " Align text by characte
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
 Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'liuchengxu/vista.vim'
+Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
+Plug 'jiangmiao/auto-pairs'                             " Auto close qutoes, parens, brakets, etc
+Plug 'thaerkh/vim-workspace'                            " Session management
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -207,6 +208,10 @@ let g:vista#renderer#enable_icon = 0
 let g:vista_default_executive = 'coc'
 nnoremap <C-k><C-o> :Vista!!<cr>
 inoremap <C-k><C-o> <esc>:Vista!!<cr>
+
+" VimWorkspace
+let g:workspace_session_directory = $HOME . '/.vim/sessions/'
+let g:workspace_autosave_always = 1
 
 
 " LightLine
