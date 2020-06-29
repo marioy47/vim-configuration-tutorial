@@ -42,7 +42,7 @@ nnoremap N Nzzzv
 if !exists('*s:setupWrapping')
   function s:setupWrapping()
     setlocal wrap
-    setlocal wrapmargin=2
+    "setlocal wrapmargin=2
     "setlocal textwidth=79
     setlocal noshowmatch
     nnoremap <buffer> j gj
@@ -88,7 +88,6 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
 Plug 'jiangmiao/auto-pairs'                             " Auto close qutoes, parens, brakets, etc
-Plug 'thaerkh/vim-workspace'                            " Session management
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -212,6 +211,7 @@ inoremap <C-k><C-o> <esc>:Vista!!<cr>
 " VimWorkspace
 let g:workspace_session_directory = $HOME . '/.vim/sessions/'
 let g:workspace_autosave_always = 1
+let g:workspace_undodir=$HOME.'/.vim/undodir'
 
 
 " LightLine
@@ -241,12 +241,22 @@ augroup nerdtree-auto-open-if-param-is-dir
 augroup END
 
 " FzF
-map <C-p> :Files<cr>
+map <C-p> :GFiles<cr>
 
 " EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
+" Fugitive
+function! ToggleGStatus() " https://gist.github.com/actionshrimp/6493611
+    if buflisted(bufname('.git/index'))
+        bd .git/index
+    else
+        Gstatus
+    endif
+endfunction
+command ToggleGStatus :call ToggleGStatus()
+nnoremap <leader>gs <C-u>:ToggleGStatus<CR>
 
 " Theme(s) settings
 if has('nvim')
