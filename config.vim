@@ -19,6 +19,7 @@ set mouse=i               " Enable mouse on all modes
 set showmatch             " Highlights the mathcin parentesis
 set termguicolors         " Required for some themes
 set splitright splitbelow " Changes the behaviour of vertical and horizontal splits
+set foldlevel=1           " Better for markdown and PHP classes
 let &t_EI = "\e[2 q"      " Make cursor a line in insert on Vim
 let &t_SI = "\e[6 q"      " Make cursor a line in insert on Vim
 
@@ -88,6 +89,7 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
 Plug 'jiangmiao/auto-pairs'                             " Auto close qutoes, parens, brakets, etc
+Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting 
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -242,6 +244,7 @@ augroup END
 
 " FzF
 map <C-p> :GFiles<cr>
+map <C-k><C-l> :Buffers<cr>
 
 " EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
