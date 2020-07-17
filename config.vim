@@ -112,6 +112,7 @@ set nowritebackup
 set cmdheight=2
 set updatetime=300
 set shortmess+=c
+
 if has("patch-8.1.1564")
   set signcolumn=number
 else
@@ -192,14 +193,14 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
 " Vista
 function! NearestMethodOrFunction() abort
