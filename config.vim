@@ -92,6 +92,8 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'jiangmiao/auto-pairs'                             " Auto close qutoes, parens, brakets, etc
 Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting 
 Plug 'dense-analysis/ale'                               " Some languages require external linters
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -233,6 +235,7 @@ call lightline#coc#register()
 " NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
+let NERDTreeWinSize=45
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
 
@@ -243,6 +246,17 @@ map <C-k><C-l> :Buffers<cr>
 " EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
+" ALE
+let g:ale_linters = {
+\   'php': ['phpcs']
+\}
+let g:ale_fixers = {
+  \    'php': ['phpcbf']
+\}
+
+" Markdown Preview
+let g:mkdp_refresh_slow = 1
 
 " Theme(s) settings
 if has('nvim')
