@@ -70,31 +70,39 @@ endif
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'                               " Makes vim work as you'd expect
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
 Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
+
 Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
+
 Plug 'itchyny/lightline.vim'                            " Beautify status line
 Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
+Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
+Plug 'ryanoasis/vim-devicons'                           " Icons on NERDtree and Vista
+Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
+
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme based on material palenight
 Plug 'sainnhe/gruvbox-material'                         " The gruvbox theme but with Material-UI colors
 Plug 'patstockwell/vim-monokai-tasty'                   " Theme that is '74% tastier than competitors'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
-Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
+
+Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
-Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
-Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
+Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
+Plug 'tpope/vim-fugitive'                               " Like :!git but better
+
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim with <C-p>
-Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
-Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
-Plug 'tpope/vim-fugitive'                               " Like :!git but better
 Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
-Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting
+
+"Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting
+Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
 Plug 'dense-analysis/ale', { 'for': 'php' }             " Code sniffing using external tools
 Plug 'bogado/file-line'                                 " Enable opening vim like - vim my_file.php:8
-Plug 'ryanoasis/vim-devicons'                           " Icons on nerdtree and vista
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -246,14 +254,21 @@ inoremap <C-k><C-o> <esc>:Vista!!<cr>
 function! LightLineFilename()
   return expand('%')
 endfunction
+" Configure the sections of the statusline
+" Integration with CoC: https://github.com/josa42/vim-lightline-coc#integration
+" Path to file: https://github.com/itchyny/lightline.vim/issues/87#issuecomment-119130738
 let g:lightline = {
   \   'active': {
-  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]]
+  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]],
+  \     'right': [['lineinfo'], ['fileformat', 'filetype']]
   \   },
   \   'component_function': {
   \     'gitbranch': 'fugitive#head',
   \     'method': 'NearestMethodOrFunction',
   \     'filename': 'LightLineFilename'
+  \   },
+  \   'component': {
+  \     'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]",
   \   }
   \ }
 "let g:lightline.colorscheme =  'darcula'
@@ -289,11 +304,17 @@ let NERDTreeQuitOnOpen=1
 let NERDTreeWinSize=45
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
+" Open up nerdtree if started like 'vim .'
 augroup nerdtree-auto-open-if-param-is-dir
   autocmd!
   autocmd StdinReadPre * let s:std_in=1
   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | exe 'NERDTreeCWD' | wincmd p | ene | exe 'cd '.argv()[0] | endif
   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+augroup END
+" Do not show lightline on NERDTree
+augroup nerdtree-normal-statusline
+    autocmd!
+    autocmd BufEnter,FileType nerdtree setlocal statusline=%#Normal#
 augroup END
 
 " FzF
@@ -311,6 +332,7 @@ let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
 
 " ALE
+let g:ale_disable_lsp = 1
 let g:ale_php_phpcs_executable='./vendor/bin/phpcs'
 let g:ale_php_php_cs_fixer_executable='./vendor/bin/phpcbf'
 let g:ale_fixers = {'php': ['phpcbf']}
