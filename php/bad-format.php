@@ -4,5 +4,11 @@ class HelloWorld {
 
     public function __construct() {
         echo "HelloWorld instansce created"; }    
+
+    public function cool()
+    {
+        return 123;
+    }
+    
  
 }

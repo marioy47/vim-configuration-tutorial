@@ -21,6 +21,7 @@ set termguicolors         " Required for some themes
 set splitright splitbelow " Changes the behaviour of vertical and horizontal splits
 set foldlevel=1           " Better for markdown and PHP classes
 set cursorline            " Highlight the current cursor line
+filetype plugin indent on " Enable file type detection.
 let &t_EI = "\e[2 q"      " Make cursor a line in insert on Vim
 let &t_SI = "\e[6 q"      " Make cursor a line in insert on Vim
 
@@ -76,7 +77,7 @@ Plug 'itchyny/lightline.vim'                            " Beautify status line
 Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme based on material palenight
 Plug 'sainnhe/gruvbox-material'                         " The gruvbox theme but with Material-UI colors
-Plug 'phanviet/vim-monokai-pro'                         " The https://monokai.pro/ theme for vim
+Plug 'patstockwell/vim-monokai-tasty'                   " Theme that is '74% tastier than competitors'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
 Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
@@ -90,8 +91,10 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
 Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting
+Plug 'dense-analysis/ale', { 'for': 'php' }             " Code sniffing using external tools
+Plug 'bogado/file-line'                                 " Enable opening vim like - vim my_file.php:8
+Plug 'ryanoasis/vim-devicons'                           " Icons on nerdtree and vista
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-Plug 'dense-analysis/ale', { 'for': 'php' }
 call plug#end()
 
 " CoC extensions to be auto installed
@@ -107,7 +110,7 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver'
     \]
 
-" CoC (taken from github.com/neoclide/coc.nvim without 'almost' no changes) 
+" CoC (taken from github.com/neoclide/coc.nvim without 'almost' no changes)
 set hidden
 set nobackup
 set nowritebackup
@@ -234,24 +237,30 @@ function! NearestMethodOrFunction() abort
 endfunction
 set statusline+=%{NearestMethodOrFunction()}
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
-let g:vista#renderer#enable_icon = 0
+"let g:vista#renderer#enable_icon = 0
 let g:vista_default_executive = 'coc'
 nnoremap <C-k><C-o> :Vista!!<cr>
 inoremap <C-k><C-o> <esc>:Vista!!<cr>
 
 " LightLine
+function! LightLineFilename()
+  return expand('%')
+endfunction
 let g:lightline = {
   \   'active': {
   \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]]
   \   },
   \   'component_function': {
   \     'gitbranch': 'fugitive#head',
-  \     'method': 'NearestMethodOrFunction'
+  \     'method': 'NearestMethodOrFunction',
+  \     'filename': 'LightLineFilename'
   \   }
   \ }
-let g:lightline.colorscheme =  'nord' 
-"let g:lightline.colorscheme = 'monokai_pro' 
+"let g:lightline.colorscheme =  'darcula'
+"let g:lightline.colorscheme =  'monokai_tasty'
+"let g:lightline.colorscheme =  'nord'
 "let g:lightline.colorscheme = 'gruvbox_material'
+let g:lightline.colorscheme = 'palenight'
 
 " Only if  josa42/vim-lightline-coc is installed
 call lightline#coc#register()
@@ -261,16 +270,18 @@ if !has('nvim')
     let &t_ZH="\e[3m"
     let &t_ZR="\e[23m"
 endif
+let g:gruvbox_material_background = 'hard'
 let g:gruvbox_material_enable_italic = 1
+let g:gruvbox_material_palette = 'mix'
 let g:material_terminal_italics = 1  " Material  Theme
 let g:palenight_terminal_italics = 1 " Palenight
-let g:gruvbox_material_background = 'hard'
-let g:gruvbox_material_palette = 'mix'
+let g:vim_monokai_tasty_italic = 1
 
-silent! colorscheme palenight
-"silent! colorscheme monokai_pro
-"silent! colorscheme gruvbox8
+
 "silent! colorscheme gruvbox-material
+"silent! colorscheme gruvbox8
+silent! colorscheme palenight
+"silent! colorscheme vim-monokai-tasty
 
 " NERDTree
 let NERDTreeShowHidden=1
@@ -288,6 +299,7 @@ augroup END
 " FzF
 map <C-p> :GFiles<cr>
 map <C-k><C-l> :Buffers<cr>
+nmap ?? :Rg!!<cr>
 
 " EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
