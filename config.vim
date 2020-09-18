@@ -1,22 +1,23 @@
 " config.vim
 
+" {{{ Behaviour
 let mapleader=","
 set nocompatible
 set number                " Show numbers on the left
 set hlsearch              " Highlight search results
-set ignorecase            " Search ingnoring case
+set ignorecase            " Search ignoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
-set noerrorbells          " I hate bells
+set noerrorbells          " I hate bells when an error occurs
 set belloff=esc           " Disable bell if type <esc> multiple times
 set tabstop=4             " Tab size of 4 spaces
 set softtabstop=4         " On insert use 4 spaces for tab
 set shiftwidth=0
-" set expandtab             " Use apropiate number of spaces
+" set expandtab             " Use appropriate number of spaces
 set nowrap                " Wrapping sucks (except on markdown)
-set noswapfile            " Do not leve any backup files
-set mouse=i               " Enable mouse on all modes
+set noswapfile            " Do not leave any backup files
+set mouse=i               " Enable mouse on insert mode
 "set clipboard=unnamed,unnamedplus     " Use the OS clipboard
-set showmatch             " Highlights the mathcin parentesis
+set showmatch             " Highlights the matching parenthesis
 set termguicolors         " Required for some themes
 set splitright splitbelow " Changes the behaviour of vertical and horizontal splits
 set foldlevel=1           " Better for markdown and PHP classes
@@ -25,7 +26,7 @@ filetype plugin indent on " Enable file type detection.
 let &t_EI = "\e[2 q"      " Make cursor a line in insert on Vim
 let &t_SI = "\e[6 q"      " Make cursor a line in insert on Vim
 
-" Keep VisualMode after indent with > or <
+" Keep Visual Mode after indenting a block with > or <
 vmap < <gv
 vmap > >gv
 
@@ -33,14 +34,16 @@ vmap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-" YY: Copy and Cut into the system clipboard
+" YY/XX Copy/Cut into the system clipboard
 noremap YY "+y<CR>
 noremap XX "+x<CR>
 
 " search will center on the line it's found in.
 nnoremap n nzzzv
 nnoremap N Nzzzv
+" }}}
 
+" {{{ Auto Commands
 " Enable wrap on Markdown and Text files
 if !exists('*s:setupWrapping')
   function s:setupWrapping()
@@ -55,7 +58,7 @@ augroup vimrc-enable-wrap-on-text-files
   autocmd BufRead,BufNewFile *.txt,*.md call s:setupWrapping()
 augroup END
 
-" Autocomand to remember las editing position
+" Auto command to remember last editing position
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -66,44 +69,61 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+" }}}
 
-" Plugins
+" {{{ Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'                               " Makes vim work as you'd expect
-
-Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
-Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
-
-Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
-
-Plug 'itchyny/lightline.vim'                            " Beautify status line
-Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
-Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
-Plug 'ryanoasis/vim-devicons'                           " Icons on NERDtree and Vista
-Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
 
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme based on material palenight
 Plug 'sainnhe/gruvbox-material'                         " The gruvbox theme but with Material-UI colors
 Plug 'patstockwell/vim-monokai-tasty'                   " Theme that is '74% tastier than competitors'
+Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
+Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
+Plug 'dense-analysis/ale'                               " Code sniffing using external tools ("diagnostic.displayByAle": true)
+Plug 'tpope/vim-fugitive'                               " Like :!git but better
+
+Plug 'itchyny/lightline.vim'                            " Beautify status line
+Plug 'maximbaz/lightline-ale'
+" Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
+
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
+Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
+Plug 'ryanoasis/vim-devicons'                           " Icons on NERDtree and Vista
+Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
+Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
+Plug 'bogado/file-line'                                 " Enable opening vim like - vim my_file.php:8
 
 Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
-Plug 'tpope/vim-fugitive'                               " Like :!git but better
+Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
+Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim with <C-p>
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-
-Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
-Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
-
-"Plug 'plasticboy/vim-markdown'                          " Fold on markdown and syntax highlighting
-Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
-Plug 'dense-analysis/ale', { 'for': 'php' }             " Code sniffing using external tools
-Plug 'bogado/file-line'                                 " Enable opening vim like - vim my_file.php:8
 call plug#end()
+" }}}
+
+" Theme(s) settings
+if !has('nvim')
+    " Enable italics in Vim 8
+    let &t_ZH="\e[3m"
+    let &t_ZR="\e[23m"
+endif
+let g:gruvbox_material_background = 'hard'
+let g:gruvbox_material_enable_italic = 1
+let g:gruvbox_material_palette = 'mix'
+let g:palenight_terminal_italics = 1
+let g:vim_monokai_tasty_italic = 1
+
+"silent! colorscheme gruvbox-material
+"silent! colorscheme gruvbox8
+silent! colorscheme palenight
+"silent! colorscheme vim-monokai-tasty
 
 " CoC extensions to be auto installed
 let g:coc_global_extensions = [
@@ -118,7 +138,7 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver'
     \]
 
-" CoC (taken from github.com/neoclide/coc.nvim without 'almost' no changes)
+" {{{ CoC (taken from github.com/neoclide/coc.nvim with comments removed)
 set hidden
 set nobackup
 set nowritebackup
@@ -238,65 +258,57 @@ nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
 nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+" }}}
 
 " Vista
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
-set statusline+=%{NearestMethodOrFunction()}
-autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
-"let g:vista#renderer#enable_icon = 0
+let g:vista#renderer#enable_icon = 0
 let g:vista_default_executive = 'coc'
 nnoremap <C-k><C-o> :Vista!!<cr>
 inoremap <C-k><C-o> <esc>:Vista!!<cr>
 
-" LightLine
+" {{{ LightLine
 function! LightLineFilename()
   return expand('%')
 endfunction
+set statusline+=%h
 " Configure the sections of the statusline
-" Integration with CoC: https://github.com/josa42/vim-lightline-coc#integration
 " Path to file: https://github.com/itchyny/lightline.vim/issues/87#issuecomment-119130738
-let g:lightline = {
-  \   'active': {
-  \     'left': [[ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status' ] , [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]],
-  \     'right': [['lineinfo'], ['fileformat', 'filetype']]
-  \   },
-  \   'component_function': {
-  \     'gitbranch': 'fugitive#head',
-  \     'method': 'NearestMethodOrFunction',
-  \     'filename': 'LightLineFilename'
-  \   },
-  \   'component': {
-  \     'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]",
-  \   }
-  \ }
+let g:lightline = { 'active': {  } }
+let g:lightline.active.left = [
+  \      [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+  \      [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]
+  \]
+let g:lightline.active.right = [
+  \      ['lineinfo'], ['fileformat', 'filetype']
+  \]
+let g:lightline.component = {
+  \  'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]"
+  \}
+let g:lightline.component_function = {
+  \    'gitbranch': 'fugitive#head',
+  \    'method': 'NearestMethodOrFunction',
+  \    'filename': 'LightLineFilename'
+  \  }
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_infos': 'lightline#ale#infos',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+let g:lightline.component_type = {
+      \     'linter_checking': 'right',
+      \     'linter_infos': 'right',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'right',
+      \ }
 "let g:lightline.colorscheme =  'darcula'
 "let g:lightline.colorscheme =  'monokai_tasty'
 "let g:lightline.colorscheme =  'nord'
 "let g:lightline.colorscheme = 'gruvbox_material'
 let g:lightline.colorscheme = 'palenight'
-
-" Only if  josa42/vim-lightline-coc is installed
-call lightline#coc#register()
-
-" Theme(s) settings
-if !has('nvim')
-    let &t_ZH="\e[3m"
-    let &t_ZR="\e[23m"
-endif
-let g:gruvbox_material_background = 'hard'
-let g:gruvbox_material_enable_italic = 1
-let g:gruvbox_material_palette = 'mix'
-let g:material_terminal_italics = 1  " Material  Theme
-let g:palenight_terminal_italics = 1 " Palenight
-let g:vim_monokai_tasty_italic = 1
-
-
-"silent! colorscheme gruvbox-material
-"silent! colorscheme gruvbox8
-silent! colorscheme palenight
-"silent! colorscheme vim-monokai-tasty
+" }}}
 
 " NERDTree
 let NERDTreeShowHidden=1
@@ -318,7 +330,8 @@ augroup nerdtree-normal-statusline
 augroup END
 
 " FzF
-map <C-p> :GFiles<cr>
+map <C-p> :Files<cr>
+map <C-k><C-p> :GFiles<cr>
 map <C-k><C-l> :Buffers<cr>
 nmap ?? :Rg!!<cr>
 
@@ -326,15 +339,13 @@ nmap ?? :Rg!!<cr>
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
-" Markdown Preview. Do not autoclose on change buffer and refresh only on
-" normal
+" Markdown Preview. Do not autoclose on change buffer and refresh only on normal
 let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
 
 " ALE
 let g:ale_disable_lsp = 1
-let g:ale_php_phpcs_executable='./vendor/bin/phpcs'
-let g:ale_php_php_cs_fixer_executable='./vendor/bin/phpcbf'
 let g:ale_fixers = {'php': ['phpcbf']}
+let g:ale_fix_on_save = 1
 
-" vim: ts=2 sw=2 et
+" vim: ts=2 sw=2 et fdm=marker
