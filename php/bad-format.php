@@ -12,3 +12,5 @@ class HelloWorld {
     
  
 }
+
+$a = new HelloWorld();

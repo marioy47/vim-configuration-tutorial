@@ -41,6 +41,9 @@ noremap XX "+x<CR>
 " search will center on the line it's found in.
 nnoremap n nzzzv
 nnoremap N Nzzzv
+
+" Enable native markdown folding
+let g:markdown_folding = 1
 " }}}
 
 " {{{ Auto Commands
@@ -78,6 +81,8 @@ Plug 'tpope/vim-sensible'                               " Makes vim work as you'
 Plug 'drewtempelmeyer/palenight.vim'                    " Soothing color scheme based on material palenight
 Plug 'sainnhe/gruvbox-material'                         " The gruvbox theme but with Material-UI colors
 Plug 'patstockwell/vim-monokai-tasty'                   " Theme that is '74% tastier than competitors'
+Plug 'haishanh/night-owl.vim'
+
 Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
@@ -108,7 +113,7 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 call plug#end()
 " }}}
 
-" Theme(s) settings
+" {{{ Theme(s) settings
 if !has('nvim')
     " Enable italics in Vim 8
     let &t_ZH="\e[3m"
@@ -122,10 +127,12 @@ let g:vim_monokai_tasty_italic = 1
 
 "silent! colorscheme gruvbox-material
 "silent! colorscheme gruvbox8
-silent! colorscheme palenight
+"silent! colorscheme palenight
 "silent! colorscheme vim-monokai-tasty
+silent! colorscheme night-owl
+" }}}
 
-" CoC extensions to be auto installed
+" {{{ CoC extensions to be auto installed
 let g:coc_global_extensions = [
     \ 'coc-css',
     \ 'coc-eslint',
@@ -137,12 +144,13 @@ let g:coc_global_extensions = [
     \ 'coc-python',
     \ 'coc-tsserver'
     \]
+" }}}
 
 " {{{ CoC (taken from github.com/neoclide/coc.nvim with comments removed)
 set hidden
 set nobackup
 set nowritebackup
-set cmdheight=2
+set cmdheight=1
 set updatetime=300
 set shortmess+=c
 if has("patch-8.1.1564")
@@ -260,11 +268,12 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 " }}}
 
-" Vista
+" {{{ Vista
 let g:vista#renderer#enable_icon = 0
 let g:vista_default_executive = 'coc'
 nnoremap <C-k><C-o> :Vista!!<cr>
 inoremap <C-k><C-o> <esc>:Vista!!<cr>
+" }}}
 
 " {{{ LightLine
 function! LightLineFilename()
@@ -307,10 +316,11 @@ let g:lightline.component_type = {
 "let g:lightline.colorscheme =  'monokai_tasty'
 "let g:lightline.colorscheme =  'nord'
 "let g:lightline.colorscheme = 'gruvbox_material'
-let g:lightline.colorscheme = 'palenight'
+"let g:lightline.colorscheme = 'palenight'
+let g:lightline.colorscheme = 'nightowl'
 " }}}
 
-" NERDTree
+" {{{ NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
 let NERDTreeWinSize=45
@@ -328,24 +338,30 @@ augroup nerdtree-normal-statusline
     autocmd!
     autocmd BufEnter,FileType nerdtree setlocal statusline=%#Normal#
 augroup END
+" }}}
 
-" FzF
+" {{{ FzF
 map <C-p> :Files<cr>
 map <C-k><C-p> :GFiles<cr>
 map <C-k><C-l> :Buffers<cr>
 nmap ?? :Rg!!<cr>
+" }}}
 
-" EasyAlign. Start interactive modes in visual and motion/text objects
+" {{{ EasyAlign. Start interactive modes in visual and motion/text objects
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+" }}}
 
-" Markdown Preview. Do not autoclose on change buffer and refresh only on normal
+" {{{ Markdown Preview. Do not autoclose on change buffer and refresh only on normal
 let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
+" }}}
 
-" ALE
+" {{{ ALE
 let g:ale_disable_lsp = 1
 let g:ale_fixers = {'php': ['phpcbf']}
 let g:ale_fix_on_save = 1
+let g:ale_set_balloons = 1
+"}}}
 
 " vim: ts=2 sw=2 et fdm=marker
