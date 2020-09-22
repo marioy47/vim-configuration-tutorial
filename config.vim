@@ -42,7 +42,7 @@ noremap XX "+x<CR>
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
-" Enable native markdown folding
+" Enable native markdown folding (hopefully will be integrated in nvim)
 let g:markdown_folding = 1
 " }}}
 
@@ -105,11 +105,14 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
-Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
+"Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder binary
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim with <C-p>
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+
 call plug#end()
 " }}}
 
@@ -151,7 +154,7 @@ set hidden
 set nobackup
 set nowritebackup
 set cmdheight=1
-set updatetime=300
+set updatetime=500
 set shortmess+=c
 if has("patch-8.1.1564")
   " Recently vim can merge signcolumn and number column into one
@@ -269,11 +272,18 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 " }}}
 
 " {{{ Vista
-let g:vista#renderer#enable_icon = 0
+let g:vista#renderer#enable_icon = 1
 let g:vista_default_executive = 'coc'
-nnoremap <C-k><C-o> :Vista!!<cr>
-inoremap <C-k><C-o> <esc>:Vista!!<cr>
+nnoremap <C-k><C-o> :Vista finder<cr>
+inoremap <C-k><C-o> <esc>:Vista finder<cr>
 " }}}
+
+" {{{ ALE
+let g:ale_disable_lsp = 1
+let g:ale_fixers = {'php': ['phpcbf']}
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+"}}}
 
 " {{{ LightLine
 function! LightLineFilename()
@@ -312,9 +322,9 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-"let g:lightline.colorscheme =  'darcula'
-"let g:lightline.colorscheme =  'monokai_tasty'
-"let g:lightline.colorscheme =  'nord'
+"let g:lightline.colorscheme = 'darcula'
+"let g:lightline.colorscheme = 'monokai_tasty'
+"let g:lightline.colorscheme = 'nord'
 "let g:lightline.colorscheme = 'gruvbox_material'
 "let g:lightline.colorscheme = 'palenight'
 let g:lightline.colorscheme = 'nightowl'
@@ -324,6 +334,7 @@ let g:lightline.colorscheme = 'nightowl'
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
 let NERDTreeWinSize=45
+let g:NERDTreeWinPos='right'
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
 " Open up nerdtree if started like 'vim .'
@@ -340,28 +351,27 @@ augroup nerdtree-normal-statusline
 augroup END
 " }}}
 
+" {{{ EasyAlign. Start interactive modes in visual and motion/text objects
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+" }}}
+
+" {{{ Vim commentary
+autocmd FileType php setlocal commentstring=//\ %s
+" }}}
+
 " {{{ FzF
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --glob "!.git/*"'
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
 map <C-p> :Files<cr>
 map <C-k><C-p> :GFiles<cr>
 map <C-k><C-l> :Buffers<cr>
 nmap ?? :Rg!!<cr>
 " }}}
 
-" {{{ EasyAlign. Start interactive modes in visual and motion/text objects
-xmap ga <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
-" }}}
-
 " {{{ Markdown Preview. Do not autoclose on change buffer and refresh only on normal
 let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
 " }}}
-
-" {{{ ALE
-let g:ale_disable_lsp = 1
-let g:ale_fixers = {'php': ['phpcbf']}
-let g:ale_fix_on_save = 1
-let g:ale_set_balloons = 1
-"}}}
 
 " vim: ts=2 sw=2 et fdm=marker
