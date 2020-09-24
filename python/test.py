@@ -1,5 +1,5 @@
 import os
 
 
-if __name__ == '__main__':
-    print ('This is main')
+if __name__ ==    '__main__':
+        print ('This is main')

@@ -1,7 +1,0 @@
-{
-  "intelephense.format.enable": false,
-  "diagnostic-languageserver.enable": true,
-  "diagnostic-languageserver.formatFiletypes": {
-    "php": ["phpcs"]
-  }
-}

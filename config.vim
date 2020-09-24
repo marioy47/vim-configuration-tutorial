@@ -4,6 +4,7 @@
 let mapleader=","
 set nocompatible
 set number                " Show numbers on the left
+set relativenumber        " Its better if you use motions like 10j or
 set hlsearch              " Highlight search results
 set ignorecase            " Search ignoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
@@ -87,7 +88,7 @@ Plug 'sheerun/vim-polyglot'                             " Metapackage with a bun
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}         " Make Vim like Visual Studio Code
 Plug 'liuchengxu/vista.vim'                             " Like Ctags but for LSP (CoC)
-Plug 'dense-analysis/ale'                               " Code sniffing using external tools ("diagnostic.displayByAle": true)
+Plug 'dense-analysis/ale'                               " Code sniffing using external tools
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 
 Plug 'itchyny/lightline.vim'                            " Beautify status line
@@ -100,6 +101,7 @@ Plug 'ryanoasis/vim-devicons'                           " Icons on NERDtree and 
 Plug 'airblade/vim-gitgutter'                           " Show which lines changed on gutter
 Plug 'editorconfig/editorconfig-vim'                    " Configure tab or spaces per project
 Plug 'bogado/file-line'                                 " Enable opening vim like - vim my_file.php:8
+Plug 'roman/golden-ratio'                               " Resize (make bigger) the focused window
 
 Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like Sublime with <C-n>
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
@@ -130,8 +132,8 @@ let g:vim_monokai_tasty_italic = 1
 
 " silent! colorscheme gruvbox-material
 " silent! colorscheme gruvbox8
-silent! colorscheme night-owl
-" silent! colorscheme palenight
+" silent! colorscheme night-owl
+silent! colorscheme palenight
 " silent! colorscheme vim-monokai-tasty
  " }}}
 
@@ -278,11 +280,12 @@ nnoremap <C-k><C-o> :Vista finder<cr>
 inoremap <C-k><C-o> <esc>:Vista finder<cr>
 " }}}
 
-" {{{ ALE (Just code fixing, no diagnostics)
+" {{{ ALE
 let g:ale_disable_lsp = 1
 let g:ale_linters_explicit = 1
 let g:ale_linters = {
-\}
+  \ 'python': ['pylint']
+  \ }
 let g:ale_fixers = {
   \ 'php': ['phpcbf'],
   \ '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -342,14 +345,13 @@ let g:lightline.active.right = [
 " let g:lightline.colorscheme = 'gruvbox_material'
 " let g:lightline.colorscheme = 'monokai_tasty'
 " let g:lightline.colorscheme = 'nightowl'
-" let g:lightline.colorscheme = 'palenight'
-let g:lightline.colorscheme = 'selenized_dark' " Goes great with night owl
+let g:lightline.colorscheme = 'palenight'
+" let g:lightline.colorscheme = 'selenized_dark' " Goes great with night owl
 " }}}
 
 " {{{ NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeQuitOnOpen=1
-let NERDTreeWinSize=45
 let g:NERDTreeWinPos='right'
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
