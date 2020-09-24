@@ -91,8 +91,8 @@ Plug 'dense-analysis/ale'                               " Code sniffing using ex
 Plug 'tpope/vim-fugitive'                               " Like :!git but better
 
 Plug 'itchyny/lightline.vim'                            " Beautify status line
-Plug 'maximbaz/lightline-ale'
-" Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
+" Plug 'maximbaz/lightline-ale'
+Plug 'josa42/vim-lightline-coc'                         " Show CoC diagnostics in LightLine
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " File navigator with <C-k><C-k>
 Plug 'Xuyuanp/nerdtree-git-plugin'                      " Show git status on NERDTree
@@ -105,7 +105,7 @@ Plug 'terryma/vim-multiple-cursors'                     " Multiple cursors like 
 Plug 'preservim/nerdcommenter'                          " Language sensitive comments with <leader>c<space>
 Plug 'junegunn/vim-easy-align'                          " Align text by characters or reguex
 Plug 'mattn/emmet-vim'                                  " Emmet support with <C-y>,
-"Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
+" Plug 'jiangmiao/auto-pairs'                             " Auto close quotes, parens, brakets, etc
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 
@@ -128,12 +128,12 @@ let g:gruvbox_material_palette = 'mix'
 let g:palenight_terminal_italics = 1
 let g:vim_monokai_tasty_italic = 1
 
-"silent! colorscheme gruvbox-material
-"silent! colorscheme gruvbox8
-"silent! colorscheme palenight
-"silent! colorscheme vim-monokai-tasty
+" silent! colorscheme gruvbox-material
+" silent! colorscheme gruvbox8
 silent! colorscheme night-owl
-" }}}
+" silent! colorscheme palenight
+" silent! colorscheme vim-monokai-tasty
+ " }}}
 
 " {{{ CoC extensions to be auto installed
 let g:coc_global_extensions = [
@@ -153,8 +153,8 @@ let g:coc_global_extensions = [
 set hidden
 set nobackup
 set nowritebackup
-set cmdheight=1
-set updatetime=500
+set cmdheight=2
+set updatetime=400
 set shortmess+=c
 if has("patch-8.1.1564")
   " Recently vim can merge signcolumn and number column into one
@@ -278,9 +278,15 @@ nnoremap <C-k><C-o> :Vista finder<cr>
 inoremap <C-k><C-o> <esc>:Vista finder<cr>
 " }}}
 
-" {{{ ALE
+" {{{ ALE (Just code fixing, no diagnostics)
 let g:ale_disable_lsp = 1
-let g:ale_fixers = {'php': ['phpcbf']}
+let g:ale_linters_explicit = 1
+let g:ale_linters = {
+\}
+let g:ale_fixers = {
+  \ 'php': ['phpcbf'],
+  \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+  \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
 "}}}
@@ -293,13 +299,6 @@ set statusline+=%h
 " Configure the sections of the statusline
 " Path to file: https://github.com/itchyny/lightline.vim/issues/87#issuecomment-119130738
 let g:lightline = { 'active': {  } }
-let g:lightline.active.left = [
-  \      [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
-  \      [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]
-  \]
-let g:lightline.active.right = [
-  \      ['lineinfo'], ['fileformat', 'filetype']
-  \]
 let g:lightline.component = {
   \  'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]"
   \}
@@ -308,13 +307,21 @@ let g:lightline.component_function = {
   \    'method': 'NearestMethodOrFunction',
   \    'filename': 'LightLineFilename'
   \  }
+" When using ALE for diagnostics
+" let g:lightline.component_expand = {
+"       \  'linter_checking': 'lightline#ale#checking',
+"       \  'linter_infos': 'lightline#ale#infos',
+"       \  'linter_warnings': 'lightline#ale#warnings',
+"       \  'linter_errors': 'lightline#ale#errors',
+"       \  'linter_ok': 'lightline#ale#ok',
+"       \ }
+" " When using CoC's diagnostics-languageserver for diagnostics
 let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_infos': 'lightline#ale#infos',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \ }
+  \   'linter_warnings': 'lightline#coc#warnings',
+  \   'linter_errors': 'lightline#coc#errors',
+  \   'linter_ok': 'lightline#coc#ok',
+  \   'status': 'lightline#coc#status',
+  \ }
 let g:lightline.component_type = {
       \     'linter_checking': 'right',
       \     'linter_infos': 'right',
@@ -322,12 +329,21 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-"let g:lightline.colorscheme = 'darcula'
-"let g:lightline.colorscheme = 'monokai_tasty'
-"let g:lightline.colorscheme = 'nord'
-"let g:lightline.colorscheme = 'gruvbox_material'
-"let g:lightline.colorscheme = 'palenight'
-let g:lightline.colorscheme = 'nightowl'
+let g:lightline.active.left = [
+  \      [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+  \      [ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status'  ],
+  \      [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]
+  \]
+let g:lightline.active.right = [
+  \      ['lineinfo'], ['fileformat', 'filetype']
+  \]
+" let g:lightline.colorscheme = 'ayu_mirage'
+" let g:lightline.colorscheme = 'darcula'
+" let g:lightline.colorscheme = 'gruvbox_material'
+" let g:lightline.colorscheme = 'monokai_tasty'
+" let g:lightline.colorscheme = 'nightowl'
+" let g:lightline.colorscheme = 'palenight'
+let g:lightline.colorscheme = 'selenized_dark' " Goes great with night owl
 " }}}
 
 " {{{ NERDTree
@@ -338,12 +354,12 @@ let g:NERDTreeWinPos='right'
 map <C-k><C-k> :NERDTreeToggle<cr>
 map <C-k><C-f> :NERDTreeFind<cr>
 " Open up nerdtree if started like 'vim .'
-augroup nerdtree-auto-open-if-param-is-dir
-  autocmd!
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | exe 'NERDTreeCWD' | wincmd p | ene | exe 'cd '.argv()[0] | endif
-  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-augroup END
+"augroup nerdtree-auto-open-if-param-is-dir
+  "autocmd!
+  "autocmd StdinReadPre * let s:std_in=1
+  "autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | exe 'NERDTreeCWD' | wincmd p | ene | exe 'cd '.argv()[0] | endif
+  "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+"augroup END
 " Do not show lightline on NERDTree
 augroup nerdtree-normal-statusline
     autocmd!
@@ -372,6 +388,9 @@ nmap ?? :Rg!!<cr>
 " {{{ Markdown Preview. Do not autoclose on change buffer and refresh only on normal
 let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
+let g:mkdp_preview_options = {
+  \ 'sync_scroll_type': 'top',
+  \ }
 " }}}
 
 " vim: ts=2 sw=2 et fdm=marker

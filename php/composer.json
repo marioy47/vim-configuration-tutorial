@@ -1,0 +1,12 @@
+{
+    "name": "marioy47/php",
+    "authors": [
+        {
+            "name": "Mario Yepes",
+            "email": "marioy47@gmail.com"
+        }
+    ],
+    "require": {
+        "squizlabs/php_codesniffer": "*"
+    }
+}
